@@ -6,7 +6,6 @@ use base qw(Module::Build);
 use File::Copy qw(copy);
 use File::Path qw(mkpath);
 use File::Basename qw(basename);
-use Alien::Prototype;
 
 sub ACTION_code {
     my $self = shift;
@@ -29,7 +28,7 @@ sub prototype_target_dir {
 
 sub prototype_urls {
     return qw(
-        http://www.prototypejs.org/assets/2007/6/20/prototype.js
+        http://www.prototypejs.org/assets/2007/8/15/prototype.js
         );
 }
 
@@ -51,7 +50,7 @@ sub install_prototype {
     return if (-d $self->prototype_target_dir());
 
     my $dst = $self->prototype_target_dir();
-    mkpath( [$dst] ) || die "unable to create '$dst'; $!";
+    mkpath( $dst ) || die "unable to create '$dst'; $!";
 
     print "Installing Prototype...\n";
     foreach my $file ($self->prototype_files()) {

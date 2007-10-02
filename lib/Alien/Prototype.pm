@@ -6,16 +6,16 @@ package Alien::Prototype;
 use strict;
 use warnings;
 use Carp;
+use File::Spec;
 use File::Copy qw(copy);
 use File::Path qw(mkpath);
-use File::Find qw(find);
 use File::Basename qw(dirname);
 
 ###############################################################################
 # Version number.
 ###############################################################################
-our $PROTOTYPE_VERSION = '1.5.1.1';
-our $VERSION = '1.5.1.2';
+our $PROTOTYPE_VERSION = '1.6.0_rc0';
+our $VERSION = '1.6.0.1_0';
 
 ###############################################################################
 # Subroutine:   version()
@@ -41,23 +41,52 @@ sub path {
 }
 
 ###############################################################################
+# Subroutine:   to_blib()
+###############################################################################
+# Returns a hash containing paths to the source files to be copied, and their
+# relative destinations.
+###############################################################################
+sub to_blib {
+    my $class = shift;
+    my $path  = $class->path();
+    my @files = (qw( prototype.js ));
+    my %blib  = map { (File::Spec->catfile($path,$_) => $_) } @files;
+    return %blib;
+}
+
+###############################################################################
+# Subroutine:   files()
+###############################################################################
+# Returns the list of files that are installed by Alien::Prototype.
+###############################################################################
+sub files {
+    my $class = shift;
+    my %blib  = $class->to_blib();
+    return sort values %blib;
+}
+
+###############################################################################
 # Subroutine:   install($destdir)
-# Parameter:    $destdir        - Destination directory
+# Parameters:   $destdir        - Destination directory
 ###############################################################################
 # Installs the Prototype JS library into the given '$destdir'.  Throws a fatal
 # exception on errors.
 ###############################################################################
 sub install {
     my ($class, $destdir) = @_;
-    if (!-d $destdir) {
-        mkpath( [$destdir] ) || croak "can't create '$destdir'; $!";
-    }
-    my $path = $class->path();
 
-    # Install JS files
-    my @files = grep { -f $_ } glob "$path/*.js";
-    foreach my $file (@files) {
-        copy( $file, $destdir ) || croak "can't copy '$file' to '$destdir'; $!";
+    # install our files
+    my %blib = $class->to_blib();
+    while (my ($srcfile, $dest) = each %blib) {
+        # get full path to destination file
+        my $destfile = File::Spec->catfile( $destdir, $dest );
+        # create any required install directories
+        my $instdir = dirname( $destfile );
+        if (!-d $instdir) {
+            mkpath( $instdir ) || croak "can't create '$instdir'; $!";
+        }
+        # install the file
+        copy( $srcfile, $destfile ) || croak "can't copy '$srcfile' to '$instdir'; $!";
     }
 }
 
@@ -95,7 +124,16 @@ the version number of the Perl wrapper).
 
 Returns the path to the available copy of the Prototype JS library. 
 
-=item install($destdir) Parameter:    $destdir        - Destination directory
+=item to_blib()
+
+Returns a hash containing paths to the source files to be copied, and their
+relative destinations. 
+
+=item files()
+
+Returns the list of files that are installed by Alien::Prototype. 
+
+=item install($destdir)
 
 Installs the Prototype JS library into the given C<$destdir>. Throws a
 fatal exception on errors. 

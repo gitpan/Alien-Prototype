@@ -1,6 +1,6 @@
 ---
 name: Alien-Prototype
-version: 1.5.1.2
+version: 1.6.0.1_0
 author:
   - Graham TerMarsch (cpan@howlingfrog.com)
 abstract: installing and finding Prototype JS library
@@ -14,7 +14,7 @@ build_requires:
 provides:
   Alien::Prototype:
     file: lib/Alien/Prototype.pm
-    version: 1.5.1.2
+    version: 1.6.0.1_0
 generated_by: Module::Build version 0.2805
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

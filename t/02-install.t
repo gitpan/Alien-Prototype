@@ -1,20 +1,35 @@
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More;
 use Test::Exception;
 use File::Path qw(rmtree);
 use Alien::Prototype;
 
 my $dir = 't/eraseme';
 
-# Do an install and make sure that at least one file got installed properly.
-Alien::Prototype->install( $dir );
-foreach my $file (qw( prototype.js )) {
-    ok( -e "$dir/$file", "$dir/$file exists" );
+# Figure out how many tests we're going to run
+my @files = Alien::Prototype->files();
+plan tests => 1 + scalar @files;
+
+# Clean up from any previous test run.
+cleanup_old_test_run: {
+    rmtree( $dir ) if (-e $dir);
 }
 
-# Re-install into the same directory, to make sure that it doesn't choke.
-lives_ok { Alien::Prototype->install($dir) };
+# Install, and make sure that the files got installed properly.
+install_prototype: {
+    Alien::Prototype->install( $dir );
+    foreach my $file (@files) {
+        ok( -e "$dir/$file", "$file exists" );
+    }
+}
 
-# Clean out the test directory
-rmtree( $dir );
+# Install over top of an existing install; shouldn't choke.
+reinstall_prototype: {
+    lives_ok { Alien::Prototype->install($dir) };
+}
+
+# Clean up after ourselves
+cleanup: {
+    rmtree( $dir );
+}
