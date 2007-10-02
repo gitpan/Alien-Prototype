@@ -29,7 +29,7 @@ sub prototype_target_dir {
 
 sub prototype_urls {
     return qw(
-        http://www.prototypejs.org/assets/2007/5/1/prototype.js
+        http://www.prototypejs.org/assets/2007/6/20/prototype.js
         );
 }
 
