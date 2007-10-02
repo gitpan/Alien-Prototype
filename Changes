@@ -1,0 +1,4 @@
+Revision history for Perl extension Alien::Prototype.
+
+1.5.0.1     Mon Oct  1 11:09 PDT 2007
+    - installs Prototype 1.5.0
